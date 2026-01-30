@@ -11,7 +11,7 @@ export default function Index() {
         <div className="container py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img src="/favicon.png" alt="SubmitFlow" className="w-8 h-8 rounded-lg" />
-            <span className="font-semibold text-lg">SubmitFlow</span>
+            <span className="font-semibold text-lg">VersoForms</span>
           </div>
           <Link to="/login">
             <Button variant="outline" size="sm">
@@ -37,7 +37,7 @@ export default function Index() {
       {/* Footer */}
       <footer className="border-t border-border mt-auto">
         <div className="container py-6 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} SubmitFlow. All rights reserved.
+          © {new Date().getFullYear()} VersoForms. All rights reserved.
         </div>
       </footer>
     </div>
