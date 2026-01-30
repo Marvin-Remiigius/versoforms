@@ -153,49 +153,6 @@ For detailed schema, check `supabase/migrations/` directory.
 - ✅ Clear node_modules and reinstall: `rm -r node_modules && npm install`
 - ✅ Check for TypeScript errors: `npm run lint`
 
-## Deployment
-
-### Production Build
-
-```bash
-npm run build
-```
-
-This generates optimized files in the `dist/` directory.
-
-### Deployment Platforms
-
-**Vercel** (Recommended)
-```bash
-npm install -g vercel
-vercel
-```
-- Follow prompts to connect your GitHub repository
-- Add environment variables in Vercel dashboard
-- Automatic deployments on git push
-
-**Netlify**
-```bash
-npm install -g netlify-cli
-netlify deploy --prod --dir=dist
-```
-- Connect your Git repository for automatic deployments
-- Set environment variables in Netlify dashboard
-
-**Manual Deployment**
-1. Run `npm run build`
-2. Upload the `dist/` folder contents to your hosting service
-3. Ensure environment variables are set on the hosting platform
-4. Configure CORS if needed for Supabase requests
-
-### Important Notes for Production
-
-- Set `VITE_SUPABASE_PROJECT_ID` and other env vars in your hosting platform
-- Enable CORS in Supabase dashboard for your domain
-- Consider adding rate limiting for API calls
-- Set up proper error logging and monitoring
-- Regularly backup your Supabase database
-
 ## Contributing
 
 This project was created for the Verso Hackathon. For contributions or improvements, please fork the repository and submit a pull request.
