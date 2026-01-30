@@ -10,9 +10,7 @@ export default function Index() {
       <header className="border-b border-border">
         <div className="container py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">SF</span>
-            </div>
+            <img src="/favicon.png" alt="SubmitFlow" className="w-8 h-8 rounded-lg" />
             <span className="font-semibold text-lg">SubmitFlow</span>
           </div>
           <Link to="/admin">
