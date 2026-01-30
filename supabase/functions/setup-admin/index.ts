@@ -21,34 +21,64 @@ Deno.serve(async (req) => {
       );
     }
 
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return new Response(
+        JSON.stringify({ error: "Missing Supabase environment variables" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY,
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
     // Check if admin already exists
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+    const { data: existingUsers, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+    if (listError) {
+      return new Response(
+        JSON.stringify({ error: listError.message ?? "Failed to list users" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const adminExists = existingUsers?.users?.some(u => u.email === email);
 
     if (adminExists) {
       // User exists, just ensure they have admin role
-      const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers();
-      const user = existingUser?.users?.find(u => u.email === email);
+      const user = existingUsers?.users?.find(u => u.email === email);
       
       if (user) {
         // Check if already has admin role
-        const { data: existingRole } = await supabaseAdmin
+        const { data: existingRole, error: roleCheckError } = await supabaseAdmin
           .from("user_roles")
           .select("*")
           .eq("user_id", user.id)
           .eq("role", "admin")
           .single();
 
+        if (roleCheckError && roleCheckError.code !== "PGRST116") {
+          return new Response(
+            JSON.stringify({ error: roleCheckError.message ?? "Failed to check user role" }),
+            { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
         if (!existingRole) {
-          await supabaseAdmin
+          const { error: insertRoleError } = await supabaseAdmin
             .from("user_roles")
             .insert({ user_id: user.id, role: "admin" });
+
+          if (insertRoleError) {
+            return new Response(
+              JSON.stringify({ error: insertRoleError.message ?? "Failed to assign admin role" }),
+              { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
         }
 
         return new Response(
@@ -65,10 +95,10 @@ Deno.serve(async (req) => {
       email_confirm: true,
     });
 
-    if (createError) {
+    if (createError || !newUser?.user?.id) {
       return new Response(
-        JSON.stringify({ error: createError.message }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: createError?.message ?? "Failed to create user" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -79,8 +109,8 @@ Deno.serve(async (req) => {
 
     if (roleError) {
       return new Response(
-        JSON.stringify({ error: roleError.message }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: roleError.message ?? "Failed to assign admin role" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
