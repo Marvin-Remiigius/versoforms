@@ -13,10 +13,10 @@ export default function Index() {
             <img src="/favicon.png" alt="SubmitFlow" className="w-8 h-8 rounded-lg" />
             <span className="font-semibold text-lg">SubmitFlow</span>
           </div>
-          <Link to="/admin">
+          <Link to="/login">
             <Button variant="outline" size="sm">
               <LayoutDashboard className="w-4 h-4 mr-2" />
-              Admin Dashboard
+              Admin Login
             </Button>
           </Link>
         </div>

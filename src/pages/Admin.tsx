@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { SubmissionCard } from "@/components/SubmissionCard";
 import { SubmissionDetail } from "@/components/SubmissionDetail";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Search, RefreshCw, Inbox } from "lucide-react";
+import { ArrowLeft, Search, RefreshCw, Inbox, LogOut } from "lucide-react";
 
 interface Submission {
   id: string;
@@ -21,6 +22,7 @@ interface Submission {
 }
 
 export default function Admin() {
+  const { signOut, user } = useAuth();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -88,10 +90,16 @@ export default function Admin() {
               <div className="h-6 w-px bg-border hidden sm:block" />
               <h1 className="text-xl font-bold hidden sm:block">Admin Dashboard</h1>
             </div>
-            <Button variant="outline" size="sm" onClick={fetchSubmissions}>
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={fetchSubmissions}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh
+              </Button>
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>
